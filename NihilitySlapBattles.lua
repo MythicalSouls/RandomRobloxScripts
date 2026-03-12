@@ -808,6 +808,11 @@ end)
 function Start()
 	local Tool = MainTool()
 	local Gui = MainGui()
+	for i,v in pairs(Gui:GetDescendants()) do
+		if v:IsA("TextLabel") then
+			v.FontFace = MainFont
+		end
+	end
 	Tool.Parent = Player.Backpack
 	Tool.Equipped:Connect(function(mouse)
 		if ToolFirstEquipped == false then
@@ -831,3 +836,5 @@ function Start()
 		Gui.Stats.Frame.Other.TextLabel.Text = "-[[ Nihility ]]-"
 	end)
 end
+
+Start()
