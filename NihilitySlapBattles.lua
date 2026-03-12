@@ -790,17 +790,19 @@ local function Play(kfseq, looped)
 	currentAnim = kfseq
 end
 
+local slashing = false
+
 RunService.RenderStepped:Connect(function()
 	if not Character or not Character:FindFirstChild("Humanoid") then return end
 	local hum = Humanoid
 	local moving = hum.MoveDirection.Magnitude > 0
 	local inAir = hum.FloorMaterial == Enum.Material.Air
 
-	if inAir then
+	if inAir and not slashing then
 		Play(JumpKF, false)
-	elseif moving then
+	elseif moving and not slashing then
 		Play(WalkKF, true)
-	else
+	elseif not slashing
 		Play(IdleKF, true)
 	end
 end)
@@ -824,16 +826,19 @@ function Start()
 			Gui.Parent = Player.PlayerGui
 			Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 35
 			Character:FindFirstChildOfClass("Humanoid").JumpPower = 75
+			RunService:BindToRenderStep("Stats", 1, function()
+				Gui.Kills.KillsText.Text = tostring(Streak.Value)
+				Gui.Stats.Frame.Speed.TextLabel.Text = "Walk Speed: " .. tostring(Character:FindFirstChildOfClass("Humanoid").WalkSpeed)
+				Gui.Stats.Frame.Jump.TextLabel.Text = "Jump Power: " .. tostring(Character:FindFirstChildOfClass("Humanoid").JumpPower)
+				Gui.Stats.Frame.Other.TextLabel.Text = "-[[ Nihility ]]-"
+			end)
 		end
 	end)
 	Tool.Activated:Connect(function()
+		slashing = true
 		Play(Attack2_Animation(), false)
-	end)
-	RunService:BindToRenderStep("Stats", 1, function()
-		Gui.Kills.KillsText.Text = tostring(Streak.Value)
-		Gui.Stats.Frame.Speed.TextLabel.Text = "Walk Speed: " .. tostring(Character:FindFirstChildOfClass("Humanoid").WalkSpeed)
-		Gui.Stats.Frame.Jump.TextLabel.Text = "Jump Power: " .. tostring(Character:FindFirstChildOfClass("Humanoid").JumpPower)
-		Gui.Stats.Frame.Other.TextLabel.Text = "-[[ Nihility ]]-"
+		task.wait(1)
+		slashing = false
 	end)
 end
 
